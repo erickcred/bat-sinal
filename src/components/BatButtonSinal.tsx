@@ -3,12 +3,14 @@ import { Pressable, StyleSheet, Text } from "react-native";
 
 type BatButtonSinalProps = {
   title: string;
-  onPress: () => void;
+  onPressIn?: () => void;
+  onPress?: () => void;
 };
 
-export const BatButtonSinal = ({ title, onPress }: BatButtonSinalProps) => {
+export const BatButtonSinal = ({ title, onPressIn, onPress }: BatButtonSinalProps) => {
   return (
     <Pressable
+      onPressIn={onPressIn}
       onPress={onPress}
       style={styles.container}>
       <Text style={styles.text}>{title}</Text>
