@@ -51,7 +51,7 @@ export default function App() {
     <View style={styles.container}>
 
     <ScrollView horizontal={false}>
-        <View style={[ styles.homeContainer, {display: visivle ? 'flex' : 'none', justifyContent: 'center', alignItems: 'center' }]}>
+        <View style={[ styles.homeContainer, {display: visivle ? 'flex' : 'none'}]}>
           <Image
             source={batSinal}
             style={{
