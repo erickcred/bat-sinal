@@ -7,11 +7,13 @@ import { useState } from 'react';
 import { BatInputText } from './src/components/BatInputText';
 import { BatInputTextArea } from './src/components/BatInputTextArea';
 import { consultaCepGet } from './src/services/viaCepApi';
+import isObjectValid from './src/utils/isObjectValid';
 
 type PersonContact = {
   nome: string;
   telefone: string;
   endereco: string;
+  mensagem: string;
 };
 
 export default function App() {
@@ -20,31 +22,22 @@ export default function App() {
   const [cep, setCep] = useState("");
 
   async function handleValidateForm() {
-    if (!personContact.nome) {
-      Alert.alert("Ops!", "Preencha o campo nome!");
-      return;
-    }
+    const keys = ['nome', 'telefone', 'endereco', 'mensagem'] as const;
+    let mensagemErro: string = "";
 
-    if (!personContact.telefone) {
-      Alert.alert("Ops!", "Preencha o campo telefone!");
-      return;
+    for (const key of keys) {
+      if (personContact[key] === undefined || personContact[key] === null || personContact[key] === "") {
+        mensagemErro += `Preencha o campo ${key}!\n`;
+      }
     }
-
-    if (!personContact.endereco) {
-      Alert.alert("Ops!", "Preencha o campo cep!");
+    console.log(mensagemErro);
+    
+    if (mensagemErro !== "") {
+      Alert.alert("Ops!", mensagemErro);
       return;
     }
     
     setVisible(true);
-  }
-
-  function isObjectValid(obj: any): boolean {
-    for (const key in obj) {
-      if (obj[key] === undefined || obj[key] === null || obj[key] === "") {
-        return false;
-      }
-    }
-    return true;
   }
 
   async function consultarCep(cep: string) {
@@ -134,9 +127,12 @@ export default function App() {
               marginBottom: 10,
             }}>📌 {personContact.endereco}</Text>
           
-          <BatInputTextArea />
-          <BatInputTextArea />
-          <BatInputTextArea />
+          <BatInputTextArea
+            placeholder="Mensagem... Observações e detalhes..."
+            numberOfLines={10}
+            onChangeText={(text) => setPersonContact({ ...personContact, mensagem: text })} 
+            value={personContact.mensagem}
+          />
 
           <BatButtonSinal
             title="Enviar"
@@ -157,14 +153,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    width: "85%",
-    marginLeft: "auto",
-    marginRight: "auto",
+    // width: "85%",
+    // marginLeft: "auto",
+    // marginRight: "auto",
   },
   homeContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    width: "85%",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   formContainer: {
     flex: 1,
@@ -172,6 +171,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 20,
+    width: "85%",
+    marginLeft: "auto",
+    marginRight: "auto",
     marginBottom: 50,
   }
 });
