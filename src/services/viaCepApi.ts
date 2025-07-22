@@ -15,11 +15,12 @@ type ViaCepResponse = {
 
 export async function consultaCepGet(cep: string): Promise<ViaCepResponse> {
   return axios.get(`https://viacep.com.br/ws/${cep}/json/`)
-  .then(function (response) {
+  .then((response) =>{
     const data: ViaCepResponse = response.data;
+    console.log(data);
     return data;
   })
-  .catch(function (error) {
-    throw error;
+  .catch((error) =>{
+    throw new Error(error.message);
   });
 }

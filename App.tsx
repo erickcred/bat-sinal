@@ -15,7 +15,7 @@ type PersonContact = {
 };
 
 export default function App() {
-  const [visivle, setVisible] = useState(true);
+  const [visible, setVisible] = useState(true);
   const [personContact, setPersonContact] = useState({} as PersonContact);
   const [cep, setCep] = useState("");
 
@@ -38,29 +38,50 @@ export default function App() {
     setVisible(true);
   }
 
+  function isObjectValid(obj: any): boolean {
+    for (const key in obj) {
+      if (obj[key] === undefined || obj[key] === null || obj[key] === "") {
+        return false;
+      }
+    }
+    return true;
+  }
+
   async function consultarCep(cep: string) {
-    const response = await consultaCepGet(cep);
-    console.log(response);
-    setPersonContact({
-      ...personContact,
-      endereco: `${response.logradouro}, ${response.bairro} - ${response.localidade}/${response.uf}`
+    await consultaCepGet(cep)
+      .then((response) => {
+        if (isObjectValid(response)) {
+          Alert.alert("Ops!", "CEP parece estar incorreto!");
+          console.log(response.logradouro);
+          return;
+        }
+        
+        setPersonContact({
+          ...personContact,
+          endereco: `${response.logradouro}, ${response.bairro} - ${response.localidade}/${response.uf}`
+      });
+    })
+    .catch((error) => {
+      Alert.alert("Ops!", `CEP parece estar incorreto! \n${error}`);
     });
   }
 
   return (
     <View style={styles.container}>
+      <ScrollView>
 
-    <ScrollView horizontal={false}>
-        <View style={[ styles.homeContainer, {display: visivle ? 'flex' : 'none'}]}>
-          <Image
-            source={batSinal}
-            style={{
-              width: 200,
-              height: 170,
-              alignItems: "flex-start",
-            }}
-            resizeMode="contain"
-          />
+        <View style={[ styles.homeContainer, {display: visible ? 'flex' : 'none'}]}>
+          <View>
+            <Image
+              source={batSinal}
+              style={{
+                width: 200,
+                height: 170,
+                alignItems: "flex-start",
+              }}
+              resizeMode="contain"
+            />
+          </View>
 
           <BatButtonSinal
             title="Activete bat signal"
@@ -68,20 +89,19 @@ export default function App() {
           />
         </View>
 
-
-        <View style={[styles.formContainer, {display: visivle ? 'none' : 'flex'}]}>
+        <View style={[ styles.formContainer, {display: visible ? 'none' : 'flex'}]}>
           <View 
             style={{
               flexDirection: 'row',
               width: '100%',
-              marginBottom: 20,
+              marginTop: 30
             }}
           >
             <Image
               source={batSinal}
               style={{
-                width: 90,
-                height: 60,
+                width: 70,
+                height: 40,
                 alignItems: "flex-start",
               }}
               resizeMode="contain"
@@ -117,15 +137,15 @@ export default function App() {
           <BatInputTextArea />
           <BatInputTextArea />
           <BatInputTextArea />
-          <BatInputTextArea />
+
           <BatButtonSinal
             title="Enviar"
             onPress={handleValidateForm}
           />
         </View>
-      </ScrollView>
 
-      <StatusBar style="auto" />
+        {/* <StatusBar style="auto" /> */}
+      </ScrollView>
     </View>
   );
 }
@@ -133,28 +153,25 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "85%",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   homeContainer: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 20,
-    width: '100%',
-    // paddingRight: 20,
-    // paddingLeft: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
   formContainer: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 20,
-    width: '100%',
-
+    marginBottom: 50,
   }
 });
